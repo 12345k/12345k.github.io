@@ -1,12 +1,692 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Karthick Aravindan</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>RFP — AI Visual Search for Jewelry Design Library</title>
+    <meta name="description" content="Request for proposal: AI-based visual search for a B2B gold & diamond jewelry manufacturer. Similarity search across 2D images, sketches, and 3D CAD; auto-tagging; standardized digital catalog; integrations with CAD/PLM/ERP." />
+
+    <meta property="og:title" content="RFP — AI Visual Search for Jewelry Design Library" />
+    <meta property="og:description" content="Seeking vendors for image/sketch and 3D CAD similarity search, duplicate detection, auto-tagging, catalog standardization, and CAD/PLM/ERP integration at ~300k SKUs." />
+    <meta property="og:type" content="website" />
+
+    <meta name="theme-color" content="#0b1220" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%23ffffff' d='M32 4l10 12-10 44L22 16 32 4z'/%3E%3Cpath fill='%2360a5fa' d='M32 4L8 20l14 40 10-56z' opacity='.9'/%3E%3Cpath fill='%2334d399' d='M32 4l24 16-14 40-10-56z' opacity='.9'/%3E%3C/svg%3E" />
+
+    <style>
+        :root{
+            --bg0:#070a12;
+            --bg1:#0b1220;
+            --card: rgba(255,255,255,.06);
+            --card2: rgba(255,255,255,.08);
+            --stroke: rgba(255,255,255,.12);
+            --text:#eaf0ff;
+            --muted: rgba(234,240,255,.75);
+            --muted2: rgba(234,240,255,.62);
+            --brand:#60a5fa;
+            --brand2:#34d399;
+            --warn:#fbbf24;
+            --bad:#fb7185;
+            --shadow: 0 20px 60px rgba(0,0,0,.40);
+            --radius: 18px;
+            --radius2: 12px;
+            --max: 1100px;
+        }
+
+        *{ box-sizing:border-box; }
+        html,body{ height:100%; }
+        body{
+            margin:0;
+            color:var(--text);
+            background:
+                radial-gradient(1200px 600px at 15% -10%, rgba(96,165,250,.30), transparent 60%),
+                radial-gradient(900px 500px at 85% 5%, rgba(52,211,153,.20), transparent 55%),
+                radial-gradient(800px 500px at 50% 110%, rgba(251,191,36,.10), transparent 55%),
+                linear-gradient(180deg, var(--bg0), var(--bg1) 40%, #070b13);
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            line-height:1.5;
+        }
+
+        a{ color:inherit; text-decoration:none; }
+        a:hover{ text-decoration:underline; }
+        code,kbd{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+        .wrap{ max-width:var(--max); margin:0 auto; padding:24px; }
+
+        .topbar{
+            position:sticky;
+            top:0;
+            z-index:10;
+            backdrop-filter: blur(10px);
+            background: rgba(7,10,18,.45);
+            border-bottom:1px solid rgba(255,255,255,.08);
+        }
+        .topbar .wrap{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding-top:14px; padding-bottom:14px; }
+        .brand{
+            display:flex; align-items:center; gap:10px;
+            font-weight:700;
+            letter-spacing:.2px;
+        }
+        .logo{
+            width:28px; height:28px; flex:0 0 28px;
+            border-radius:9px;
+            background:
+                radial-gradient(10px 10px at 30% 25%, rgba(255,255,255,.35), transparent 60%),
+                linear-gradient(135deg, rgba(96,165,250,1), rgba(52,211,153,1));
+            box-shadow: 0 10px 30px rgba(96,165,250,.18);
+        }
+
+        nav{ display:flex; gap:14px; flex-wrap:wrap; justify-content:flex-end; }
+        nav a{
+            color: var(--muted);
+            font-size: 14px;
+            padding: 8px 10px;
+            border-radius: 999px;
+        }
+        nav a:hover{
+            background: rgba(255,255,255,.06);
+            text-decoration:none;
+            color: var(--text);
+        }
+
+        .hero{ padding: 34px 0 10px; }
+        .pillrow{ display:flex; flex-wrap:wrap; gap:10px; margin: 0 0 14px; }
+        .pill{
+            display:inline-flex; align-items:center; gap:8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.10);
+            color: var(--muted);
+            font-size: 13px;
+        }
+        .dot{ width:7px; height:7px; border-radius:99px; background: var(--brand2); box-shadow: 0 0 0 4px rgba(52,211,153,.12); }
+
+        h1{
+            margin: 0 0 10px;
+            font-size: clamp(28px, 4.5vw, 46px);
+            line-height: 1.08;
+            letter-spacing: -.5px;
+        }
+        .lead{
+            margin: 0;
+            max-width: 70ch;
+            font-size: clamp(15px, 1.9vw, 18px);
+            color: var(--muted);
+        }
+
+        .ctaRow{ display:flex; gap:12px; flex-wrap:wrap; margin-top: 18px; }
+        .btn{
+            display:inline-flex; align-items:center; justify-content:center; gap:10px;
+            padding: 11px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,.14);
+            background: rgba(255,255,255,.06);
+            color: var(--text);
+            font-weight: 650;
+            box-shadow: 0 10px 30px rgba(0,0,0,.25);
+        }
+        .btn:hover{ text-decoration:none; background: rgba(255,255,255,.09); }
+        .btn.primary{
+            border-color: rgba(96,165,250,.45);
+            background: linear-gradient(135deg, rgba(96,165,250,.35), rgba(52,211,153,.22));
+        }
+        .btn.primary:hover{
+            background: linear-gradient(135deg, rgba(96,165,250,.46), rgba(52,211,153,.28));
+        }
+        .btn.ghost{
+            box-shadow:none;
+            background: transparent;
+        }
+
+        .grid{
+            display:grid;
+            grid-template-columns: 1.25fr .75fr;
+            gap: 18px;
+            margin-top: 22px;
+        }
+        @media (max-width: 980px){
+            .grid{ grid-template-columns: 1fr; }
+        }
+
+        .card{
+            background: var(--card);
+            border: 1px solid var(--stroke);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+        .card h2{ margin: 0 0 10px; font-size: 18px; letter-spacing: -.2px; }
+        .card p{ margin: 0; color: var(--muted); }
+        .card + .card{ margin-top: 14px; }
+
+        .kpi{
+            display:grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        @media (max-width: 620px){
+            .kpi{ grid-template-columns: 1fr; }
+        }
+        .kpi .tile{
+            padding: 14px 14px 12px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.05);
+        }
+        .kpi .big{ font-size: 22px; font-weight: 780; letter-spacing: -.4px; }
+        .kpi .small{ color: var(--muted2); font-size: 13px; margin-top: 4px; }
+
+        .section{ padding: 22px 0; }
+        .sectionHeader{
+            display:flex;
+            align-items:baseline;
+            justify-content:space-between;
+            gap: 12px;
+            margin: 0 0 12px;
+        }
+        .sectionHeader h2{
+            margin:0;
+            font-size: 20px;
+            letter-spacing: -.2px;
+        }
+        .sectionHeader .hint{ color: var(--muted2); font-size: 13px; }
+
+        .cols2{
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        @media (max-width: 900px){
+            .cols2{ grid-template-columns: 1fr; }
+        }
+
+        ul{ margin: 10px 0 0; padding-left: 18px; color: var(--muted); }
+        li{ margin: 6px 0; }
+
+        .tag{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            font-size: 13px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.05);
+            color: var(--muted);
+            margin: 6px 8px 0 0;
+        }
+        .tag b{ color: var(--text); font-weight: 700; }
+        .tag .sw{ width:8px; height:8px; border-radius:999px; background: var(--brand); }
+        .tag.ok .sw{ background: var(--brand2); }
+        .tag.warn .sw{ background: var(--warn); }
+        .tag.bad .sw{ background: var(--bad); }
+
+        .form{
+            display:grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        @media (max-width: 780px){
+            .form{ grid-template-columns: 1fr; }
+        }
+        .field{ display:flex; flex-direction:column; gap:7px; }
+        label{ font-size: 13px; color: var(--muted2); }
+        input, textarea, select{
+            width:100%;
+            padding: 11px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(7,10,18,.35);
+            color: var(--text);
+            outline:none;
+        }
+        input::placeholder, textarea::placeholder{ color: rgba(234,240,255,.45); }
+        textarea{ resize: vertical; min-height: 110px; }
+        .full{ grid-column: 1 / -1; }
+
+        .note{
+            margin-top: 10px;
+            color: var(--muted2);
+            font-size: 13px;
+        }
+
+        .monoBox{
+            margin-top: 10px;
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.05);
+            color: rgba(234,240,255,.82);
+            overflow:auto;
+            white-space: pre-wrap;
+        }
+
+        footer{
+            padding: 30px 0 60px;
+            color: var(--muted2);
+            font-size: 13px;
+        }
+        .fineprint{
+            display:flex;
+            flex-wrap:wrap;
+            gap: 10px 16px;
+            align-items:center;
+            justify-content:space-between;
+            border-top: 1px solid rgba(255,255,255,.08);
+            padding-top: 16px;
+            margin-top: 28px;
+        }
+        .srOnly{
+            position:absolute !important;
+            height:1px; width:1px;
+            overflow:hidden;
+            clip: rect(1px, 1px, 1px, 1px);
+            white-space:nowrap;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello World !!!</h1>
+    <header class="topbar">
+        <div class="wrap">
+            <div class="brand">
+                <span class="logo" aria-hidden="true"></span>
+                <span>AI Visual Search — Jewelry Design RFP</span>
+            </div>
+            <nav aria-label="Page">
+                <a href="#overview">Overview</a>
+                <a href="#scope">Scope</a>
+                <a href="#requirements">Requirements</a>
+                <a href="#integrations">Integrations</a>
+                <a href="#deliverables">Deliverables</a>
+                <a href="#respond">Respond</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <section class="hero" id="overview">
+            <div class="pillrow">
+                <div class="pill"><span class="dot" aria-hidden="true"></span>Request for Proposal (RFP)</div>
+                <div class="pill">Industry: B2B gold & diamond jewelry manufacturing</div>
+                <div class="pill">Library size: ~300,000 SKUs (2D + 3D CAD)</div>
+            </div>
+
+            <h1>Seeking vendors for AI-based visual similarity search & automated cataloging</h1>
+            <p class="lead">
+                We are evaluating vendors who can implement an <b>AI visual search solution</b> to identify
+                <b>duplicate / near-duplicate jewelry designs</b>, enable <b>image/sketch + 3D CAD similarity search</b>,
+                and use AI to <b>auto-tag</b> and generate a <b>standardized digital catalog</b> with enterprise integrations.
+            </p>
+
+            <div class="ctaRow">
+                <a class="btn primary" href="#respond">Respond as a vendor</a>
+                <a class="btn ghost" href="#requirements">View requirements</a>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2>What success looks like</h2>
+                    <p>
+                        A production-grade search and catalog pipeline that makes the design library searchable and consistent:
+                        faster dedupe, better reuse of existing designs, standardized attributes, and clean integration into CAD/PLM/ERP workflows.
+                    </p>
+                    <div style="margin-top:14px">
+                        <span class="tag ok"><span class="sw" aria-hidden="true"></span><b>Similarity search</b> for images/sketches and 3D CAD</span>
+                        <span class="tag ok"><span class="sw" aria-hidden="true"></span><b>Duplicate detection</b> with configurable thresholds</span>
+                        <span class="tag ok"><span class="sw" aria-hidden="true"></span><b>Auto-tagging</b> + standardized taxonomy</span>
+                        <span class="tag warn"><span class="sw" aria-hidden="true"></span><b>Enterprise integration</b> CAD/PLM/ERP + SSO</span>
+                    </div>
+                </div>
+
+                <aside class="card">
+                    <h2>At a glance</h2>
+                    <div class="kpi" role="list" aria-label="Key metrics">
+                        <div class="tile" role="listitem">
+                            <div class="big">300k</div>
+                            <div class="small">Approx. SKUs/designs</div>
+                        </div>
+                        <div class="tile" role="listitem">
+                            <div class="big">2D + 3D</div>
+                            <div class="small">Images/sketches + CAD</div>
+                        </div>
+                        <div class="tile" role="listitem">
+                            <div class="big">B2B</div>
+                            <div class="small">Manufacturing catalog</div>
+                        </div>
+                    </div>
+                    <p class="note">
+                        This page is vendor-facing. Replace the contact block in the “Respond” section with your details before sharing.
+                    </p>
+                </aside>
+            </div>
+        </section>
+
+        <section class="section" id="scope">
+            <div class="sectionHeader">
+                <h2>Project scope</h2>
+                <div class="hint">Expected: discovery → pilot → production rollout</div>
+            </div>
+            <div class="cols2">
+                <div class="card">
+                    <h2>Core use cases</h2>
+                    <ul>
+                        <li><b>Find duplicates / near-duplicates</b> across existing designs to reduce rework and improve reuse.</li>
+                        <li><b>Search by image or sketch</b> (uploaded or pasted) to retrieve visually similar designs.</li>
+                        <li><b>Search by 3D CAD</b> (CAD file or derived representation) to retrieve similar geometry.</li>
+                        <li><b>Auto-tagging</b> to populate attributes and standardize the design catalog.</li>
+                        <li><b>Catalog standardization</b> with governance (taxonomy, confidence, review workflow).</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h2>Out of scope (unless proposed)</h2>
+                    <ul>
+                        <li>End-to-end eCommerce storefront build.</li>
+                        <li>Replacing existing PLM/ERP/CAD systems.</li>
+                        <li>Manual re-labeling of the full library without AI-assisted workflows.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="requirements">
+            <div class="sectionHeader">
+                <h2>Functional requirements</h2>
+                <div class="hint">Tell us what you meet out-of-the-box vs custom</div>
+            </div>
+
+            <div class="cols2">
+                <div class="card">
+                    <h2>Visual similarity search (2D)</h2>
+                    <ul>
+                        <li>Query by <b>photo</b> and <b>sketch</b> with top‑K results and similarity scores.</li>
+                        <li>Filters/facets (metal, stone type, collection, style, category, etc.) based on tags/metadata.</li>
+                        <li>Configurable thresholding for “same design”, “variant”, and “similar inspiration”.</li>
+                        <li>Batch mode to discover duplicates and clusters across large sets.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>3D similarity search (CAD)</h2>
+                    <ul>
+                        <li>Ingest 3D CAD assets (or derived meshes/renders) to enable similarity by geometry.</li>
+                        <li>Support for normalization (scale/orientation) and robust matching for minor edits.</li>
+                        <li>Explainability or diagnostics (e.g., similar substructures / global shape match indicators) preferred.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>Auto-tagging & catalog standardization</h2>
+                    <ul>
+                        <li>Auto-suggest tags with <b>confidence scores</b> and <b>human review workflow</b>.</li>
+                        <li>Taxonomy management (controlled vocabulary, synonyms, hierarchy).</li>
+                        <li>Standardized outputs for a digital catalog (attributes, naming conventions, categories).</li>
+                        <li>Audit trail: who approved what, when, and model version.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2>Quality, scale & operations</h2>
+                    <ul>
+                        <li>Handles ~300k designs with room to grow (index build times, incremental updates, re-index strategy).</li>
+                        <li>Clear performance targets (latency, throughput) and monitoring (SLAs/SLOs).</li>
+                        <li>Role-based access, permissions, and environment separation (dev/stage/prod).</li>
+                        <li>Data governance: retention, access logging, model retraining approach.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="integrations">
+            <div class="sectionHeader">
+                <h2>Integration requirements</h2>
+                <div class="hint">CAD/PLM/ERP connectivity + import/export</div>
+            </div>
+            <div class="cols2">
+                <div class="card">
+                    <h2>Systems & interfaces</h2>
+                    <ul>
+                        <li>Integration with existing <b>CAD</b> tools and repositories (ingest + links back to source).</li>
+                        <li>Integration with <b>PLM</b> / <b>ERP</b> for item master / attributes / approvals.</li>
+                        <li>APIs: REST (required), webhooks/eventing (preferred).</li>
+                        <li>Bulk import/export: CSV/JSON + object storage for assets.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h2>Security & deployment</h2>
+                    <ul>
+                        <li>SSO (SAML/OIDC) and RBAC.</li>
+                        <li>Encryption in transit and at rest; key management approach.</li>
+                        <li>Deployment options: vendor-hosted SaaS or customer VPC/on‑prem (please specify).</li>
+                        <li>Compliance posture (e.g., SOC2/ISO) if applicable.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="deliverables">
+            <div class="sectionHeader">
+                <h2>Expected deliverables</h2>
+                <div class="hint">Propose phased delivery with measurable outcomes</div>
+            </div>
+            <div class="cols2">
+                <div class="card">
+                    <h2>Pilot (recommended)</h2>
+                    <ul>
+                        <li>Discovery + data sampling plan + success metrics (precision/recall, dedupe hit rate, reviewer time saved).</li>
+                        <li>Prototype UI or workflow integrated into existing process.</li>
+                        <li>Benchmark report vs baseline (manual search / current tags).</li>
+                        <li>Production architecture proposal + rollout plan.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h2>Production rollout</h2>
+                    <ul>
+                        <li>Search services (2D + 3D), indexing pipeline, monitoring, and admin tools.</li>
+                        <li>Auto-tagging pipeline with human-in-the-loop review.</li>
+                        <li>Integrations (CAD/PLM/ERP), data contracts, and documentation.</li>
+                        <li>Enablement: training, runbooks, SLAs, support model.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="respond">
+            <div class="sectionHeader">
+                <h2>Respond as a vendor</h2>
+                <div class="hint">Copy → paste into an email in under 60 seconds</div>
+            </div>
+
+            <div class="card">
+                <p>
+                    If you offer a suitable solution (or can recommend a vendor), please share your company name,
+                    relevant project experience, and a contact person with email + phone number details.
+                </p>
+
+                <div class="cols2" style="margin-top:14px">
+                    <div>
+                        <h2 style="margin:0 0 8px; font-size:16px">Client request (verbatim)</h2>
+                        <div class="monoBox" id="verbatim">
+I am looking for vendors who can implement an AI-based visual search solution for a client (that is a B2B gold and diamond jewelry manufacturer) with a large 2D image and 3D CAD design library (around 300,000 SKUs). The solution should enable image/sketch and 3D CAD similarity search to identify duplicate or near-duplicate designs, use AI to auto-tag designs and create a standardized digital catalog, and integrate with existing CAD/PLM/ERP systems. If you offer such solutions or can recommend a suitable vendor, please contact me with your company name, relevant project experience, and a contact person with email and phone number details.
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 style="margin:0 0 8px; font-size:16px">Your contact (edit before sharing)</h2>
+                        <div class="monoBox" id="contactBlock">Contact: Your Name
+Email: your.name@yourcompany.com
+Phone: +1 (555) 010-0200</div>
+                        <p class="note">Tip: replace the three lines above in <code>index.html</code> with your real contact details.</p>
+                    </div>
+                </div>
+
+                <h2 style="margin-top:16px">Vendor response builder</h2>
+                <form class="form" id="vendorForm">
+                    <div class="field">
+                        <label for="company">Company name</label>
+                        <input id="company" name="company" placeholder="Example: Acme Vision AI" autocomplete="organization" required />
+                    </div>
+                    <div class="field">
+                        <label for="website">Website (optional)</label>
+                        <input id="website" name="website" placeholder="https://…" inputmode="url" />
+                    </div>
+                    <div class="field">
+                        <label for="contactName">Contact person</label>
+                        <input id="contactName" name="contactName" placeholder="Full name" autocomplete="name" required />
+                    </div>
+                    <div class="field">
+                        <label for="contactEmail">Contact email</label>
+                        <input id="contactEmail" name="contactEmail" placeholder="name@company.com" inputmode="email" autocomplete="email" required />
+                    </div>
+                    <div class="field">
+                        <label for="contactPhone">Contact phone</label>
+                        <input id="contactPhone" name="contactPhone" placeholder="+__ ____ ____" inputmode="tel" autocomplete="tel" required />
+                    </div>
+                    <div class="field">
+                        <label for="deployment">Deployment options</label>
+                        <select id="deployment" name="deployment">
+                            <option value="SaaS">SaaS (vendor-hosted)</option>
+                            <option value="Customer VPC">Customer VPC</option>
+                            <option value="On-prem">On‑prem</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                    <div class="field full">
+                        <label for="experience">Relevant project experience (brief)</label>
+                        <textarea id="experience" name="experience" placeholder="1–3 bullets: similar scale, similarity search, CAD/PLM integration, cataloging, etc." required></textarea>
+                    </div>
+                    <div class="field full">
+                        <label for="notes">Notes / questions (optional)</label>
+                        <textarea id="notes" name="notes" placeholder="Anything you want us to know: timelines, demo links, references, security posture, etc."></textarea>
+                    </div>
+                    <div class="field full" style="display:flex; gap:10px; flex-direction:row; flex-wrap:wrap; align-items:center">
+                        <button class="btn primary" type="button" id="copyBtn">Copy response email</button>
+                        <a class="btn" href="#" id="mailtoBtn">Open in email client</a>
+                        <span class="note" id="status" aria-live="polite"></span>
+                    </div>
+                </form>
+
+                <div class="monoBox" id="emailPreview" aria-label="Email preview"></div>
+                <p class="note">
+                    Privacy note: this form does not submit anywhere. It only generates text locally in your browser.
+                </p>
+            </div>
+        </section>
+
+        <footer>
+            <div class="fineprint">
+                <div>© <span id="year"></span> — AI Visual Search RFP</div>
+                <div>
+                    Built as a static page. Share the link or host via GitHub Pages.
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        (function () {
+            const $ = (id) => document.getElementById(id);
+            const yearEl = $("year");
+            if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+            const form = $("vendorForm");
+            const preview = $("emailPreview");
+            const status = $("status");
+            const copyBtn = $("copyBtn");
+            const mailtoBtn = $("mailtoBtn");
+
+            function safe(v) { return (v || "").toString().trim(); }
+
+            function buildEmail() {
+                const company = safe($("company").value);
+                const website = safe($("website").value);
+                const contactName = safe($("contactName").value);
+                const contactEmail = safe($("contactEmail").value);
+                const contactPhone = safe($("contactPhone").value);
+                const deployment = safe($("deployment").value);
+                const experience = safe($("experience").value);
+                const notes = safe($("notes").value);
+
+                const subject = `Vendor response: AI visual search for jewelry design library — ${company || "Company"}`;
+
+                const lines = [];
+                lines.push("Hello,");
+                lines.push("");
+                lines.push("We can support the AI-based visual search + cataloging requirements described in the RFP page. Details below:");
+                lines.push("");
+                lines.push("Company:");
+                lines.push(`- Name: ${company || "[Company name]"}`);
+                if (website) lines.push(`- Website: ${website}`);
+                lines.push("");
+                lines.push("Primary contact:");
+                lines.push(`- Name: ${contactName || "[Contact name]"}`);
+                lines.push(`- Email: ${contactEmail || "[Email]"}`);
+                lines.push(`- Phone: ${contactPhone || "[Phone]"}`);
+                lines.push("");
+                lines.push("Solution fit:");
+                lines.push(`- Deployment: ${deployment || "[SaaS / VPC / On‑prem / Hybrid]"}`);
+                lines.push("");
+                lines.push("Relevant project experience:");
+                lines.push(experience ? experience.split("\n").map(l => `- ${l}`.replace(/- - /g, "- ")).join("\n") : "- [Add 1–3 bullets]");
+                lines.push("");
+                if (notes) {
+                    lines.push("Notes / questions:");
+                    lines.push(notes);
+                    lines.push("");
+                }
+                lines.push("Best regards,");
+                lines.push(contactName || "[Name]");
+
+                const body = lines.join("\n");
+                return { subject, body };
+            }
+
+            function render() {
+                const { subject, body } = buildEmail();
+                preview.textContent = `Subject: ${subject}\n\n${body}`;
+                const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                mailtoBtn.setAttribute("href", mailto);
+            }
+
+            async function copyText(text) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                    return;
+                }
+                const ta = document.createElement("textarea");
+                ta.value = text;
+                ta.setAttribute("readonly", "true");
+                ta.style.position = "fixed";
+                ta.style.top = "-1000px";
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand("copy");
+                document.body.removeChild(ta);
+            }
+
+            function setStatus(msg) {
+                status.textContent = msg;
+                if (!msg) return;
+                window.setTimeout(() => { status.textContent = ""; }, 3200);
+            }
+
+            form.addEventListener("input", render);
+            render();
+
+            copyBtn.addEventListener("click", async () => {
+                const { subject, body } = buildEmail();
+                const text = `Subject: ${subject}\n\n${body}`;
+                try {
+                    await copyText(text);
+                    setStatus("Copied.");
+                } catch (e) {
+                    setStatus("Could not copy. Please select and copy from the preview box.");
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
